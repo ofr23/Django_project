@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333333;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #cccccc;
+            font-size: 16px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .movie-details {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #e6e6e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Movie List</h1>
+        <form id="movieForm">
+            <select id="movieSelect" name="movie" onchange="displayMovieDetails()">
+                <option value="">Select a movie</option>
+                {% for n in alldata %}
+                <option value="{{ n.id }}" data-name="{{ n.title }}" data-release="{{ n.release_date }}" data-description="{{ n.description }}" data-genres="{% for genre in n.genres.all %}{{ genre.name }}{% if not forloop.last %}, {% endif %}{% empty %}None{% endfor %}" data-actors="{% for actor in n.actors.all %}{{ actor.name }}{% if not forloop.last %}, {% endif %}{% empty %}None{% endfor %}">
+                    {{ n.title }} - {{ n.release_date }}
+                </option>
+                {% endfor %}
+            </select>
+            <div id="movieDetails" class="movie-details" style="display:none;"></div>
+            <button type="button" onclick="confirmSelection()">Confirm Selection</button>
+        </form>
+        <div id="confirmationMessage" class="confirmation-message" style="display:none;"></div>
+    </div>
+
+    <script>
+        function displayMovieDetails() {
+            var selectedOption = document.getElementById("movieSelect").options[document.getElementById("movieSelect").selectedIndex];
+            var movieDetails = document.getElementById("movieDetails");
+            var title= selectedOption.getAttribute("data-name");
+            var datarelease = selectedOption.getAttribute("data-release");
+            var description = selectedOption.getAttribute("data-description");
+            var genres = selectedOption.getAttribute("data-genres");
+            var actors = selectedOption.getAttribute("data-actors");
+
+            var fullDetails = "<strong>Movie Details:</strong><br>Title: " +(title ? title: "None")+"<br>Release: " +(datarelease ? datarelease : "None") +"<br>Description: " + (description ? description : "None") + "<br>Genres: " + (genres ? genres : "None") + "<br>Actors: " + (actors ? actors : "None");
+            
+            movieDetails.innerHTML = fullDetails;
+            movieDetails.style.display = "block";
+        }
+
+        function confirmSelection() {
+            var selectedMovieId = document.getElementById("movieSelect").value;
+            var confirmationMessage = document.getElementById("confirmationMessage");
+            
+            if (selectedMovieId !== "") {
+                confirmationMessage.innerHTML = "You have selected movie ID: " + selectedMovieId;
+                confirmationMessage.style.display = "block";
+            } else {
+                confirmationMessage.innerHTML = "Please select a movie";
+                confirmationMessage.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
